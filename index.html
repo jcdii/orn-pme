@@ -182,34 +182,37 @@
                                 <p>Pour une question, une idée, ou un projet, le mieux c'est d'en parler.</p>
                             </div>
 
-                            <form method="post">
+                            <form id="form-contact" method="post" action="https://formspree.io/f/mnqyjban">
+
+
                                 <div class="mb-3"  data-aos="fade-up" data-aos-delay="50">
                                     <label for="name" class="form-label mb-0">Nom</label>
-                                    <input type="text" class="form-control transparent-input" id="name" placeholder="Lucien Bramard" autocomplete="false">
+                                    <input type="text" class="form-control transparent-input" id="name" name="name" placeholder="Lucien Bramard" autocomplete="false">
                                 </div>
 
                                 <div class="mb-3" data-aos="fade-up" data-aos-delay="100">
                                     <label for="company" class="form-label mb-0">Entreprise</label>
-                                    <input type="text" class="form-control transparent-input" id="company" placeholder="La SCEP" autocomplete="false">
+                                    <input type="text" class="form-control transparent-input" id="company" name="company" placeholder="La SCEP" autocomplete="false">
                                 </div>
 
                                 <div class="mb-3" data-aos="fade-up" data-aos-delay="150">
                                     <label for="email" class="form-label mb-0">Email</label>
-                                    <input type="email" class="form-control transparent-input" id="email" placeholder="oss@117.fr" autocomplete="false">
+                                    <input type="email" class="form-control transparent-input" id="email" name="email" placeholder="oss@117.fr" autocomplete="false">
                                 </div>
 
                                 <div class="mb-3" data-aos="fade-up" data-aos-delay="200">
                                     <label for="phone" class="form-label mb-0">Téléphone</label>
-                                    <input type="text" class="form-control transparent-input" id="phone" placeholder="+33 0 00 00 00 00" autocomplete="false">
+                                    <input type="text" class="form-control transparent-input" id="phone" name="phone" placeholder="+33 0 00 00 00 00" autocomplete="false">
                                 </div>
 
                                 <div class="mb-3" data-aos="fade-up" data-aos-delay="250">
                                     <label for="message" class="form-label mb-0">Votre message</label>
-                                    <textarea class="form-control transparent-input" id="message" placeholder="" rows="3"></textarea>
+                                    <textarea class="form-control transparent-input" id="message" name="message" placeholder="" rows="3"></textarea>
                                 </div>
 
                                 <div class="mt-3" data-aos="fade-up" data-aos-delay="250">
-                                    <button type="submit" class="btn btn-orion bg-dark btn-lg text-white px-5">Envoyer</button>
+                                    <button id="form-submit" type="submit" class="btn btn-orion bg-dark btn-lg text-white px-5">Envoyer</button>
+                                    <span id="form-status" class="ms-4"></span>
                                 </div>
 
                             </form>
@@ -243,7 +246,6 @@
                 </div>
             </div>
         </section>
-
         <footer class="text-center text-lg-start">
             <div class="">
                 <div class="container text-center text-md-start mt-5">
@@ -280,9 +282,7 @@
                 </div>
             </div>
         </footer>
-
     </main>
-
 
     <div class="offcanvas offcanvas-end bg-orion" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel" style="">
         <div class="offcanvas-header text-end">
@@ -330,6 +330,48 @@
     <script src="js/main.js"></script>
     <script>
         AOS.init();
+    </script>
+    <script>
+        var form = document.getElementById("form-contact");
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            var status = document.getElementById("form-status");
+            var button = document.getElementById("form-submit");
+            var data = new FormData(event.target);
+            fetch(event.target.action, {
+                method: form.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                console.log(response)
+                if (response.ok) {
+                    button.remove();
+                    status.classList.add("text-sucess");
+                    status.innerHTML = "<strong>&check;&nbsp;Votre message a bien été envoyé</strong>";
+                    form.reset()
+                } else {
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            button.remove();
+                            status.classList.add("text-danger");
+                            status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+                        } else {
+                            button.remove();
+                            status.classList.add("text-danger");
+                            status.innerHTML = "Une erreur est survenue lors de l'envoi de votre message."
+                        }
+                    })
+                }
+            }).catch(error => {
+                button.remove();
+                status.classList.add("text-danger");
+                status.innerHTML = "Une erreur est survenue lors de l'envoi de votre message."
+            });
+        }
+        form.addEventListener("submit", handleSubmit)
     </script>
 </body>
 </html>
