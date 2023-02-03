@@ -20,6 +20,11 @@
   src: url("../fonts/MultiDisplay-ExtraBold.otf") format("opentype");
 }
 
+.text-orion {
+  color: #F3B93B;
+  font-weight: bolder;
+}
+
 html {
   font-size: 14px;
   background-color: white;
